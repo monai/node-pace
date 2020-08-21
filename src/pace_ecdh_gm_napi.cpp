@@ -173,6 +173,7 @@ void BuildDo83_execute(napi_env env, void* data) {
                        &buffer, NULL);
   do_data->pcd_ephemeral_public_key =
       std::vector<unsigned char>(buffer, buffer + len);
+  free(buffer);
   if (len == 0) {
     do_data->error = crypto_error();
     return;
@@ -181,10 +182,17 @@ void BuildDo83_execute(napi_env env, void* data) {
   len = EC_KEY_priv2buf(pcd_ephemeral_key_pair, &buffer);
   do_data->pcd_ephemeral_private_key =
       std::vector<unsigned char>(buffer, buffer + len);
+  free(buffer);
   if (len == 0) {
     do_data->error = crypto_error();
     return;
   }
+
+  EC_KEY_free(pcd_key_pair);
+  EC_KEY_free(pcd_ephemeral_key_pair);
+  EC_POINT_free(ic_public_key_point);
+  EC_POINT_free(shared_secret_point_H);
+  EC_POINT_free(ephemeral_generator_G);
 }
 
 void BuildDo83_complete(napi_env env, napi_status status, void* data) {

@@ -20,6 +20,10 @@ int generate_ephemeral_key(const EC_GROUP* group,
       group_ephemeral, ephemeral_generator_G, order, cofactor));
   PACE_CALL_WITH_STATUS(EC_KEY_set_group(ephemeral_key_pair, group_ephemeral));
 
+  EC_GROUP_clear_free(group_ephemeral);
+  BN_free(order);
+  BN_free(cofactor);
+
   return EC_KEY_generate_key(ephemeral_key_pair);
 
   //  return new ECParameterSpec(
@@ -53,8 +57,15 @@ int map_nonce_to_G(const EC_GROUP* ec_group,
   PACE_CALL_WITH_STATUS(EC_POINT_mul(ec_group, generator_G_intermediate, 0,
                                      generator_G, bn_nonce_s, nullptr));
 
-  return EC_POINT_add(ec_group, ephemeral_generator_G, generator_G_intermediate,
-                      shared_secret_point_H, nullptr);
+  int status;
+  status =
+      EC_POINT_add(ec_group, ephemeral_generator_G, generator_G_intermediate,
+                   shared_secret_point_H, nullptr);
+
+  BN_free(bn_nonce_s);
+  EC_POINT_free(generator_G_intermediate);
+
+  return status;
 
   //  D~ = (p, a, b, G~, n, h) where G~ = [s]G + H
 
@@ -77,6 +88,7 @@ int calculate_H(EC_KEY* pcd_key_pair,
 
   PACE_CALL_RET_ZERO(group, EC_KEY_get0_group(pcd_key_pair));
   PACE_CALL_RET_ZERO(pcd_private_key, EC_KEY_get0_private_key(pcd_key_pair));
+
   return EC_POINT_mul(group, shared_secret_point_H, 0, ic_public_key,
                       pcd_private_key, 0);
 }

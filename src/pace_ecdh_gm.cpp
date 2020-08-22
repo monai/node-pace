@@ -72,7 +72,7 @@ int map_nonce_to_G(const EC_GROUP* group,
 
   if (ret == 1 && status == 0) {
     ret = EC_POINT_add(group, ephemeral_generator_G, generator_G_intermediate,
-                        shared_secret_point_H, nullptr);
+                       shared_secret_point_H, nullptr);
   }
 
   BN_free(bn_nonce_s);
@@ -98,14 +98,30 @@ int map_nonce_to_G(const EC_GROUP* group,
 int calculate_H(EC_KEY* pcd_key_pair,
                 EC_POINT* ic_public_key,
                 EC_POINT* shared_secret_point_H) {
+  int ret = 1;
+  int status = 0;
+
   const EC_GROUP* group;
   const BIGNUM* pcd_private_key;
 
-  PACE_CALL_RET_ZERO(group, EC_KEY_get0_group(pcd_key_pair));
-  PACE_CALL_RET_ZERO(pcd_private_key, EC_KEY_get0_private_key(pcd_key_pair));
+  group = EC_KEY_get0_group(pcd_key_pair);
+  if (group == nullptr) {
+    status = 1;
+  }
 
-  return EC_POINT_mul(group, shared_secret_point_H, 0, ic_public_key,
-                      pcd_private_key, 0);
+  if (ret == 1 && status == 0) {
+    pcd_private_key = EC_KEY_get0_private_key(pcd_key_pair);
+    if (pcd_private_key == nullptr) {
+      status = 2;
+    }
+  }
+
+  if (ret == 1 && status == 0) {
+    ret = EC_POINT_mul(group, shared_secret_point_H, 0, ic_public_key,
+                       pcd_private_key, 0);
+  }
+
+  return ret;
 }
 
 }  // namespace ecdh_gm

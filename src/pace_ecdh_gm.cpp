@@ -43,29 +43,44 @@ int map_nonce_to_G(const EC_GROUP* group,
                    std::vector<unsigned char>& nonce_s,
                    EC_POINT* shared_secret_point_H,
                    EC_POINT* ephemeral_generator_G) {
+  int ret = 1;
+  int status = 0;
+
   BIGNUM* bn_nonce_s = BN_new();
   const EC_POINT* generator_G;
-  EC_POINT* generator_G_intermediate;
+  EC_POINT* generator_G_intermediate = nullptr;
 
   BN_bin2bn(nonce_s.data(), 16, bn_nonce_s);
-  if (bn_nonce_s == nullptr) {
-    return 0;
+
+  generator_G = EC_GROUP_get0_generator(group);
+  if (generator_G == nullptr) {
+    ret = 0;
+    status = 1;
   }
 
-  PACE_CALL_RET_ZERO(generator_G, EC_GROUP_get0_generator(group));
-  PACE_CALL_RET_ZERO(generator_G_intermediate, EC_POINT_new(group));
-  PACE_CALL_WITH_STATUS(EC_POINT_mul(group, generator_G_intermediate, 0,
-                                     generator_G, bn_nonce_s, nullptr));
+  if (ret == 1 && status == 0) {
+    generator_G_intermediate = EC_POINT_new(group);
+    if (generator_G_intermediate == nullptr) {
+      status = 2;
+    }
+  }
 
-  int status;
-  status =
-      EC_POINT_add(group, ephemeral_generator_G, generator_G_intermediate,
-                   shared_secret_point_H, nullptr);
+  if (ret == 1 && status == 0) {
+    ret = EC_POINT_mul(group, generator_G_intermediate, 0, generator_G,
+                       bn_nonce_s, nullptr);
+  }
+
+  if (ret == 1 && status == 0) {
+    ret = EC_POINT_add(group, ephemeral_generator_G, generator_G_intermediate,
+                        shared_secret_point_H, nullptr);
+  }
 
   BN_free(bn_nonce_s);
-  EC_POINT_free(generator_G_intermediate);
+  if (generator_G_intermediate != nullptr) {
+    EC_POINT_free(generator_G_intermediate);
+  }
 
-  return status;
+  return ret;
 
   //  D~ = (p, a, b, G~, n, h) where G~ = [s]G + H
 

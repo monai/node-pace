@@ -86,113 +86,128 @@ napi_value BuildDo83(napi_env env, napi_callback_info args) {
 void BuildDo83_execute(napi_env env, void* data) {
   do83_data* do_data = static_cast<do83_data*>(data);
 
-  EC_KEY* pcd_key_pair;
+  EC_KEY* pcd_key_pair = nullptr;
   EC_KEY* pcd_ephemeral_key_pair = EC_KEY_new();
   const EC_GROUP* group;
-  EC_POINT* ic_public_key_point;
-  EC_POINT* shared_secret_point_H = NULL;
-  EC_POINT* ephemeral_generator_G = NULL;
+  EC_POINT* ic_public_key_point = nullptr;
+  EC_POINT* shared_secret_point_H = nullptr;
+  EC_POINT* ephemeral_generator_G = nullptr;
+  unsigned char* buffer;
 
-  int status;
+  int ret = 1;
+  int status = 0;
   size_t len;
 
   //  ec_key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
   pcd_key_pair = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
   if (pcd_key_pair == NULL) {
-    do_data->error = crypto_error();
-    return;
+    status = 1;
   }
 
-  status = EC_KEY_oct2key(pcd_key_pair, do_data->pcd_public_key.data(),
-                          do_data->pcd_public_key.size(), NULL);
   if (status == 0) {
-    do_data->error = crypto_error();
-    return;
+    ret = EC_KEY_oct2key(pcd_key_pair, do_data->pcd_public_key.data(),
+                         do_data->pcd_public_key.size(), NULL);
   }
 
-  status = EC_KEY_oct2priv(pcd_key_pair, do_data->pcd_private_key.data(),
-                           do_data->pcd_private_key.size());
-  if (status == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ret = EC_KEY_oct2priv(pcd_key_pair, do_data->pcd_private_key.data(),
+                          do_data->pcd_private_key.size());
   }
 
-  group = EC_KEY_get0_group(pcd_key_pair);
-  if (group == NULL) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    group = EC_KEY_get0_group(pcd_key_pair);
+    if (group == nullptr) {
+      status = 2;
+    }
   }
 
-  ic_public_key_point = EC_POINT_new(group);
-  if (ic_public_key_point == NULL) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ic_public_key_point = EC_POINT_new(group);
+    if (ic_public_key_point == nullptr) {
+      status = 3;
+    }
   }
 
-  shared_secret_point_H = EC_POINT_new(group);
-  if (shared_secret_point_H == NULL) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    shared_secret_point_H = EC_POINT_new(group);
+    if (shared_secret_point_H == nullptr) {
+      status = 4;
+    }
   }
 
-  ephemeral_generator_G = EC_POINT_new(group);
-  if (ephemeral_generator_G == NULL) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ephemeral_generator_G = EC_POINT_new(group);
+    if (ephemeral_generator_G == nullptr) {
+      status = 5;
+    }
   }
 
-  status = EC_POINT_oct2point(group, ic_public_key_point,
-                              do_data->ic_public_key.data(),
-                              do_data->ic_public_key.size(), NULL);
-  if (status == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ret = EC_POINT_oct2point(group, ic_public_key_point,
+                             do_data->ic_public_key.data(),
+                             do_data->ic_public_key.size(), NULL);
   }
 
-  len = calculate_H(pcd_key_pair, ic_public_key_point, shared_secret_point_H);
-  if (len == 0) {
-    do_data->error = crypto_error();
-    return;
-  }
-  status = map_nonce_to_G(group, do_data->nonce, shared_secret_point_H,
-                          ephemeral_generator_G);
-  if (status == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ret = calculate_H(pcd_key_pair, ic_public_key_point, shared_secret_point_H);
   }
 
-  status = generate_ephemeral_key(group, ephemeral_generator_G,
-                                  pcd_ephemeral_key_pair);
-  if (status == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ret = map_nonce_to_G(group, do_data->nonce, shared_secret_point_H,
+                         ephemeral_generator_G);
   }
 
-  unsigned char* buffer;
-  len = EC_KEY_key2buf(pcd_ephemeral_key_pair, POINT_CONVERSION_UNCOMPRESSED,
-                       &buffer, NULL);
-  do_data->pcd_ephemeral_public_key =
-      std::vector<unsigned char>(buffer, buffer + len);
-  free(buffer);
-  if (len == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    ret = generate_ephemeral_key(group, ephemeral_generator_G,
+                                 pcd_ephemeral_key_pair);
   }
 
-  len = EC_KEY_priv2buf(pcd_ephemeral_key_pair, &buffer);
-  do_data->pcd_ephemeral_private_key =
-      std::vector<unsigned char>(buffer, buffer + len);
-  free(buffer);
-  if (len == 0) {
-    do_data->error = crypto_error();
-    return;
+  if (ret == 1 && status == 0) {
+    len = EC_KEY_key2buf(pcd_ephemeral_key_pair, POINT_CONVERSION_UNCOMPRESSED,
+                         &buffer, NULL);
+    if (len == 0) {
+      status = 6;
+    }
   }
 
-  EC_KEY_free(pcd_key_pair);
-  EC_KEY_free(pcd_ephemeral_key_pair);
-  EC_POINT_free(ic_public_key_point);
-  EC_POINT_free(shared_secret_point_H);
-  EC_POINT_free(ephemeral_generator_G);
+  if (ret == 1 && status == 0) {
+    do_data->pcd_ephemeral_public_key =
+        std::vector<unsigned char>(buffer, buffer + len);
+    free(buffer);
+  }
+
+  if (ret == 1 && status == 0) {
+    len = EC_KEY_priv2buf(pcd_ephemeral_key_pair, &buffer);
+    if (len == 0) {
+      status = 7;
+    }
+  }
+
+  if (ret == 1 && status == 0) {
+    do_data->pcd_ephemeral_private_key =
+        std::vector<unsigned char>(buffer, buffer + len);
+    free(buffer);
+  }
+
+  if (pcd_key_pair != nullptr) {
+    EC_KEY_free(pcd_key_pair);
+  }
+  if (pcd_ephemeral_key_pair != nullptr) {
+    EC_KEY_free(pcd_ephemeral_key_pair);
+  }
+  if (ic_public_key_point != nullptr) {
+    EC_POINT_free(ic_public_key_point);
+  }
+  if (shared_secret_point_H != nullptr) {
+    EC_POINT_free(shared_secret_point_H);
+  }
+  if (ephemeral_generator_G != nullptr) {
+    EC_POINT_free(ephemeral_generator_G);
+  }
+
+  if (ret != 1 && status != 0) {
+    do_data->error = crypto_error();
+  }
 }
 
 void BuildDo83_complete(napi_env env, napi_status status, void* data) {

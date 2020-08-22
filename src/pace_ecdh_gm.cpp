@@ -1,4 +1,3 @@
-#include "pace.h"
 #include "pace_ecdh_gm.hpp"
 
 namespace pace {

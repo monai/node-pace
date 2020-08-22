@@ -32,8 +32,6 @@ napi_value BuildDo83(napi_env env, napi_callback_info args);
 void BuildDo83_execute(napi_env env, void* data);
 void BuildDo83_complete(napi_env env, napi_status status, void* data);
 
-// void set_error(napi_env env, do_data_t* do_data);
-
 }  // namespace napi
 }  // namespace ecdh_gm
 }  // namespace pace

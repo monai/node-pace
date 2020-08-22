@@ -5,7 +5,6 @@
       "sources": [
         "src/addon.cpp",
         "src/napi.h",
-        "src/pace.h",
         "src/pace_crypto_error.hpp",
         "src/pace_crypto_error.cpp",
         "src/pace_ecdh_gm.hpp",

@@ -12,7 +12,7 @@ int generate_ephemeral_key(const EC_GROUP* group,
                            EC_POINT* ephemeral_generator_G,
                            EC_KEY* ephemeral_key_pair);
 
-int map_nonce_to_G(const EC_GROUP* ec_group,
+int map_nonce_to_G(const EC_GROUP* group,
                    std::vector<unsigned char>& nonce_s,
                    EC_POINT* shared_secret_point_H,
                    EC_POINT* ephemeral_generator_G);

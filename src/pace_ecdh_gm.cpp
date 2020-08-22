@@ -39,7 +39,7 @@ int generate_ephemeral_key(const EC_GROUP* group,
 }
 
 // G~ = [s]G + H
-int map_nonce_to_G(const EC_GROUP* ec_group,
+int map_nonce_to_G(const EC_GROUP* group,
                    std::vector<unsigned char>& nonce_s,
                    EC_POINT* shared_secret_point_H,
                    EC_POINT* ephemeral_generator_G) {
@@ -52,14 +52,14 @@ int map_nonce_to_G(const EC_GROUP* ec_group,
     return 0;
   }
 
-  PACE_CALL_RET_ZERO(generator_G, EC_GROUP_get0_generator(ec_group));
-  PACE_CALL_RET_ZERO(generator_G_intermediate, EC_POINT_new(ec_group));
-  PACE_CALL_WITH_STATUS(EC_POINT_mul(ec_group, generator_G_intermediate, 0,
+  PACE_CALL_RET_ZERO(generator_G, EC_GROUP_get0_generator(group));
+  PACE_CALL_RET_ZERO(generator_G_intermediate, EC_POINT_new(group));
+  PACE_CALL_WITH_STATUS(EC_POINT_mul(group, generator_G_intermediate, 0,
                                      generator_G, bn_nonce_s, nullptr));
 
   int status;
   status =
-      EC_POINT_add(ec_group, ephemeral_generator_G, generator_G_intermediate,
+      EC_POINT_add(group, ephemeral_generator_G, generator_G_intermediate,
                    shared_secret_point_H, nullptr);
 
   BN_free(bn_nonce_s);

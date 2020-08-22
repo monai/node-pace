@@ -7,24 +7,46 @@ namespace ecdh_gm {
 int generate_ephemeral_key(const EC_GROUP* group,
                            EC_POINT* ephemeral_generator_G,
                            EC_KEY* ephemeral_key_pair) {
+  int ret = 1;
+  int status = 0;
+
   BIGNUM* order = BN_new();
   BIGNUM* cofactor = BN_new();
-  EC_GROUP* group_ephemeral;
+  EC_GROUP* group_ephemeral = nullptr;
 
-  PACE_CALL_WITH_STATUS(EC_GROUP_get_order(group, order, NULL));
-  PACE_CALL_WITH_STATUS(EC_GROUP_get_cofactor(group, cofactor, NULL));
+  ret = EC_GROUP_get_order(group, order, NULL);
 
-  PACE_CALL_RET_ZERO(group_ephemeral, EC_GROUP_dup(group));
+  if (ret == 1) {
+    ret = EC_GROUP_get_cofactor(group, cofactor, NULL);
+  }
 
-  PACE_CALL_WITH_STATUS(EC_GROUP_set_generator(
-      group_ephemeral, ephemeral_generator_G, order, cofactor));
-  PACE_CALL_WITH_STATUS(EC_KEY_set_group(ephemeral_key_pair, group_ephemeral));
+  if (ret == 1) {
+    group_ephemeral = EC_GROUP_dup(group);
+    if (group_ephemeral == nullptr) {
+      status = 1;
+    }
+  }
 
-  EC_GROUP_clear_free(group_ephemeral);
+  if (ret == 1 && status == 0) {
+    ret = EC_GROUP_set_generator(group_ephemeral, ephemeral_generator_G, order,
+                                 cofactor);
+  }
+
+  if (ret == 1 && status == 0) {
+    ret = EC_KEY_set_group(ephemeral_key_pair, group_ephemeral);
+  }
+
+  if (ret == 1 && status == 0) {
+    ret = EC_KEY_generate_key(ephemeral_key_pair);
+  }
+
   BN_free(order);
   BN_free(cofactor);
+  if (group_ephemeral != nullptr) {
+    EC_GROUP_clear_free(group_ephemeral);
+  }
 
-  return EC_KEY_generate_key(ephemeral_key_pair);
+  return ret;
 
   //  return new ECParameterSpec(
   //                             new EllipticCurve(

@@ -13,10 +13,10 @@ int generate_ephemeral_key(const EC_GROUP* group,
   BIGNUM* cofactor = BN_new();
   EC_GROUP* group_ephemeral = nullptr;
 
-  ret = EC_GROUP_get_order(group, order, NULL);
+  ret = EC_GROUP_get_order(group, order, nullptr);
 
   if (ret == 1) {
-    ret = EC_GROUP_get_cofactor(group, cofactor, NULL);
+    ret = EC_GROUP_get_cofactor(group, cofactor, nullptr);
   }
 
   if (ret == 1) {

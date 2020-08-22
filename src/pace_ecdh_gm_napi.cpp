@@ -100,13 +100,13 @@ void BuildDo83_execute(napi_env env, void* data) {
 
   //  ec_key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
   pcd_key_pair = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
-  if (pcd_key_pair == NULL) {
+  if (pcd_key_pair == nullptr) {
     status = 1;
   }
 
   if (status == 0) {
     ret = EC_KEY_oct2key(pcd_key_pair, do_data->pcd_public_key.data(),
-                         do_data->pcd_public_key.size(), NULL);
+                         do_data->pcd_public_key.size(), nullptr);
   }
 
   if (ret == 1 && status == 0) {
@@ -145,7 +145,7 @@ void BuildDo83_execute(napi_env env, void* data) {
   if (ret == 1 && status == 0) {
     ret = EC_POINT_oct2point(group, ic_public_key_point,
                              do_data->ic_public_key.data(),
-                             do_data->ic_public_key.size(), NULL);
+                             do_data->ic_public_key.size(), nullptr);
   }
 
   if (ret == 1 && status == 0) {
@@ -164,7 +164,7 @@ void BuildDo83_execute(napi_env env, void* data) {
 
   if (ret == 1 && status == 0) {
     len = EC_KEY_key2buf(pcd_ephemeral_key_pair, POINT_CONVERSION_UNCOMPRESSED,
-                         &buffer, NULL);
+                         &buffer, nullptr);
     if (len == 0) {
       status = 6;
     }

@@ -149,16 +149,16 @@ void BuildDo83_execute(napi_env env, void* data) {
   }
 
   if (ret == 1 && status == 0) {
-    ret = calculate_H(pcd_key_pair, ic_public_key_point, shared_secret_point_H);
+    ret = calculate_shared_secret(pcd_key_pair, ic_public_key_point, shared_secret_point_H);
   }
 
   if (ret == 1 && status == 0) {
-    ret = map_nonce_to_G(group, do_data->nonce, shared_secret_point_H,
+    ret = map_nonce_to_generator(group, do_data->nonce, shared_secret_point_H,
                          ephemeral_generator_G);
   }
 
   if (ret == 1 && status == 0) {
-    ret = generate_ephemeral_key(group, ephemeral_generator_G,
+    ret = map_domain_parameters(group, ephemeral_generator_G,
                                  pcd_ephemeral_key_pair);
   }
 

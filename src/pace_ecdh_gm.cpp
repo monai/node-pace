@@ -3,15 +3,15 @@
 namespace pace {
 namespace ecdh_gm {
 
-int generate_ephemeral_key(const EC_GROUP* group,
-                           EC_POINT* ephemeral_generator_G,
-                           EC_KEY* ephemeral_key_pair) {
+int map_domain_parameters(const EC_GROUP* group,
+                          EC_POINT* generator,
+                          EC_KEY* key_pair) {
   int ret = 1;
   int status = 0;
 
   BIGNUM* order = BN_new();
   BIGNUM* cofactor = BN_new();
-  EC_GROUP* group_ephemeral = nullptr;
+  EC_GROUP* new_group = nullptr;
 
   ret = EC_GROUP_get_order(group, order, nullptr);
 
@@ -20,29 +20,28 @@ int generate_ephemeral_key(const EC_GROUP* group,
   }
 
   if (ret == 1) {
-    group_ephemeral = EC_GROUP_dup(group);
-    if (group_ephemeral == nullptr) {
+    new_group = EC_GROUP_dup(group);
+    if (new_group == nullptr) {
       status = 1;
     }
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_GROUP_set_generator(group_ephemeral, ephemeral_generator_G, order,
-                                 cofactor);
+    ret = EC_GROUP_set_generator(new_group, generator, order, cofactor);
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_KEY_set_group(ephemeral_key_pair, group_ephemeral);
+    ret = EC_KEY_set_group(key_pair, new_group);
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_KEY_generate_key(ephemeral_key_pair);
+    ret = EC_KEY_generate_key(key_pair);
   }
 
   BN_free(order);
   BN_free(cofactor);
-  if (group_ephemeral != nullptr) {
-    EC_GROUP_clear_free(group_ephemeral);
+  if (new_group != nullptr) {
+    EC_GROUP_clear_free(new_group);
   }
 
   return ret;
@@ -60,45 +59,45 @@ int generate_ephemeral_key(const EC_GROUP* group,
 }
 
 // G~ = [s]G + H
-int map_nonce_to_G(const EC_GROUP* group,
-                   std::vector<unsigned char>& nonce_s,
-                   EC_POINT* shared_secret_point_H,
-                   EC_POINT* ephemeral_generator_G) {
+int map_nonce_to_generator(const EC_GROUP* group,
+                           std::vector<unsigned char>& nonce_s,
+                           EC_POINT* shared_secret,
+                           EC_POINT* generator) {
   int ret = 1;
   int status = 0;
 
   BIGNUM* bn_nonce_s = BN_new();
-  const EC_POINT* generator_G;
-  EC_POINT* generator_G_intermediate = nullptr;
+  const EC_POINT* input_generator;
+  EC_POINT* intermediate_generator = nullptr;
 
   BN_bin2bn(nonce_s.data(), 16, bn_nonce_s);
 
-  generator_G = EC_GROUP_get0_generator(group);
-  if (generator_G == nullptr) {
+  input_generator = EC_GROUP_get0_generator(group);
+  if (input_generator == nullptr) {
     ret = 0;
     status = 1;
   }
 
   if (ret == 1 && status == 0) {
-    generator_G_intermediate = EC_POINT_new(group);
-    if (generator_G_intermediate == nullptr) {
+    intermediate_generator = EC_POINT_new(group);
+    if (intermediate_generator == nullptr) {
       status = 2;
     }
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_POINT_mul(group, generator_G_intermediate, 0, generator_G,
+    ret = EC_POINT_mul(group, intermediate_generator, 0, input_generator,
                        bn_nonce_s, nullptr);
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_POINT_add(group, ephemeral_generator_G, generator_G_intermediate,
-                       shared_secret_point_H, nullptr);
+    ret = EC_POINT_add(group, generator, intermediate_generator, shared_secret,
+                       nullptr);
   }
 
   BN_free(bn_nonce_s);
-  if (generator_G_intermediate != nullptr) {
-    EC_POINT_free(generator_G_intermediate);
+  if (intermediate_generator != nullptr) {
+    EC_POINT_free(intermediate_generator);
   }
 
   return ret;
@@ -116,9 +115,9 @@ int map_nonce_to_G(const EC_GROUP* group,
   //                                        );
 }
 
-int calculate_H(EC_KEY* pcd_key_pair,
-                EC_POINT* ic_public_key,
-                EC_POINT* shared_secret_point_H) {
+int calculate_shared_secret(EC_KEY* pcd_key_pair,
+                            EC_POINT* ic_public_key,
+                            EC_POINT* shared_secret) {
   int ret = 1;
   int status = 0;
 
@@ -138,8 +137,8 @@ int calculate_H(EC_KEY* pcd_key_pair,
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_POINT_mul(group, shared_secret_point_H, 0, ic_public_key,
-                       pcd_private_key, 0);
+    ret = EC_POINT_mul(group, shared_secret, 0, ic_public_key, pcd_private_key,
+                       0);
   }
 
   return ret;

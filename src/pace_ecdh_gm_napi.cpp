@@ -87,11 +87,9 @@ void BuildDo83_execute(napi_env env, void* data) {
   do83_data* do_data = static_cast<do83_data*>(data);
 
   EC_KEY* pcd_key_pair = nullptr;
-  EC_KEY* pcd_ephemeral_key_pair = EC_KEY_new();
+  EC_KEY* ephemeral_key_pair = EC_KEY_new();
   const EC_GROUP* group;
-  EC_POINT* ic_public_key_point = nullptr;
-  EC_POINT* shared_secret_point_H = nullptr;
-  EC_POINT* ephemeral_generator_G = nullptr;
+  EC_POINT* ic_public_key = nullptr;
   unsigned char* buffer;
 
   int ret = 1;
@@ -117,56 +115,33 @@ void BuildDo83_execute(napi_env env, void* data) {
   if (ret == 1 && status == 0) {
     group = EC_KEY_get0_group(pcd_key_pair);
     if (group == nullptr) {
+      status = 1;
+    }
+  }
+
+  if (ret == 1 && status == 0) {
+    ic_public_key = EC_POINT_new(group);
+    if (ic_public_key == nullptr) {
       status = 2;
     }
   }
 
   if (ret == 1 && status == 0) {
-    ic_public_key_point = EC_POINT_new(group);
-    if (ic_public_key_point == nullptr) {
-      status = 3;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    shared_secret_point_H = EC_POINT_new(group);
-    if (shared_secret_point_H == nullptr) {
-      status = 4;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    ephemeral_generator_G = EC_POINT_new(group);
-    if (ephemeral_generator_G == nullptr) {
-      status = 5;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    ret = EC_POINT_oct2point(group, ic_public_key_point,
+    ret = EC_POINT_oct2point(group, ic_public_key,
                              do_data->ic_public_key.data(),
                              do_data->ic_public_key.size(), nullptr);
   }
 
   if (ret == 1 && status == 0) {
-    ret = calculate_shared_secret(pcd_key_pair, ic_public_key_point, shared_secret_point_H);
+    ret = calculate_ephemeral_key(pcd_key_pair, ic_public_key,
+                                  do_data->nonce, ephemeral_key_pair);
   }
 
   if (ret == 1 && status == 0) {
-    ret = map_nonce_to_generator(group, do_data->nonce, shared_secret_point_H,
-                         ephemeral_generator_G);
-  }
-
-  if (ret == 1 && status == 0) {
-    ret = map_domain_parameters(group, ephemeral_generator_G,
-                                 pcd_ephemeral_key_pair);
-  }
-
-  if (ret == 1 && status == 0) {
-    len = EC_KEY_key2buf(pcd_ephemeral_key_pair, POINT_CONVERSION_UNCOMPRESSED,
+    len = EC_KEY_key2buf(ephemeral_key_pair, POINT_CONVERSION_UNCOMPRESSED,
                          &buffer, nullptr);
     if (len == 0) {
-      status = 6;
+      status = 3;
     }
   }
 
@@ -177,9 +152,9 @@ void BuildDo83_execute(napi_env env, void* data) {
   }
 
   if (ret == 1 && status == 0) {
-    len = EC_KEY_priv2buf(pcd_ephemeral_key_pair, &buffer);
+    len = EC_KEY_priv2buf(ephemeral_key_pair, &buffer);
     if (len == 0) {
-      status = 7;
+      status = 4;
     }
   }
 
@@ -192,17 +167,11 @@ void BuildDo83_execute(napi_env env, void* data) {
   if (pcd_key_pair != nullptr) {
     EC_KEY_free(pcd_key_pair);
   }
-  if (pcd_ephemeral_key_pair != nullptr) {
-    EC_KEY_free(pcd_ephemeral_key_pair);
+  if (ephemeral_key_pair != nullptr) {
+    EC_KEY_free(ephemeral_key_pair);
   }
-  if (ic_public_key_point != nullptr) {
-    EC_POINT_free(ic_public_key_point);
-  }
-  if (shared_secret_point_H != nullptr) {
-    EC_POINT_free(shared_secret_point_H);
-  }
-  if (ephemeral_generator_G != nullptr) {
-    EC_POINT_free(ephemeral_generator_G);
+  if (ic_public_key != nullptr) {
+    EC_POINT_free(ic_public_key);
   }
 
   if (ret != 1 && status != 0) {

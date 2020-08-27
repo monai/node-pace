@@ -28,9 +28,9 @@ struct do83_data {
   napi_async_work work;
 };
 
-napi_value BuildDo83(napi_env env, napi_callback_info args);
-void BuildDo83_execute(napi_env env, void* data);
-void BuildDo83_complete(napi_env env, napi_status status, void* data);
+napi_value build_do83(napi_env env, napi_callback_info args);
+void build_do83_execute(napi_env env, void* data);
+void build_do83_complete(napi_env env, napi_status status, void* data);
 
 }  // namespace napi
 }  // namespace ecdh_gm

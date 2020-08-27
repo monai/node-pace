@@ -8,7 +8,7 @@ namespace pace {
 namespace ecdh_gm {
 namespace napi {
 
-napi_value BuildDo83(napi_env env, napi_callback_info args) {
+napi_value build_do83(napi_env env, napi_callback_info args) {
   size_t argc = 5;
   napi_value argv[argc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
@@ -61,8 +61,8 @@ napi_value BuildDo83(napi_env env, napi_callback_info args) {
   NAPI_CALL(env, napi_create_reference(env, argv[4], 1, &callback));
 
   napi_value resource_name;
-  NAPI_CALL(env, napi_create_string_utf8(env, "PaceEcdhBuildDo83",
-                                         NAPI_AUTO_LENGTH, &resource_name));
+  NAPI_CALL(env, napi_create_string_utf8(env, "build_do83", NAPI_AUTO_LENGTH,
+                                         &resource_name));
 
   do83_data* do_data = new do83_data;
   do_data->nonce = nonce;
@@ -72,7 +72,7 @@ napi_value BuildDo83(napi_env env, napi_callback_info args) {
   do_data->callback = callback;
 
   NAPI_CALL(env, napi_create_async_work(env, nullptr, resource_name,
-                                        BuildDo83_execute, BuildDo83_complete,
+                                        build_do83_execute, build_do83_complete,
                                         do_data, &do_data->work));
 
   NAPI_CALL(env, napi_queue_async_work(env, do_data->work));
@@ -83,7 +83,7 @@ napi_value BuildDo83(napi_env env, napi_callback_info args) {
   return out;
 }
 
-void BuildDo83_execute(napi_env env, void* data) {
+void build_do83_execute(napi_env env, void* data) {
   do83_data* do_data = static_cast<do83_data*>(data);
 
   EC_KEY* pcd_key_pair = nullptr;
@@ -127,14 +127,14 @@ void BuildDo83_execute(napi_env env, void* data) {
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_POINT_oct2point(group, ic_public_key,
-                             do_data->ic_public_key.data(),
-                             do_data->ic_public_key.size(), nullptr);
+    ret =
+        EC_POINT_oct2point(group, ic_public_key, do_data->ic_public_key.data(),
+                           do_data->ic_public_key.size(), nullptr);
   }
 
   if (ret == 1 && status == 0) {
-    ret = calculate_ephemeral_key(pcd_key_pair, ic_public_key,
-                                  do_data->nonce, ephemeral_key_pair);
+    ret = calculate_ephemeral_key(pcd_key_pair, ic_public_key, do_data->nonce,
+                                  ephemeral_key_pair);
   }
 
   if (ret == 1 && status == 0) {
@@ -179,7 +179,7 @@ void BuildDo83_execute(napi_env env, void* data) {
   }
 }
 
-void BuildDo83_complete(napi_env env, napi_status status, void* data) {
+void build_do83_complete(napi_env env, napi_status status, void* data) {
   do83_data* do_data = static_cast<do83_data*>(data);
 
   if (!do_data->error_code.empty() || !do_data->error_message.empty()) {

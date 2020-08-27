@@ -64,7 +64,7 @@ const nonceS = Buffer.from([
 
 console.log('nonce: ', nonceS);
 
-addon.paceEcdhBuildDo83(nonceS, pcdPublicKey, pcdPrivateKey, icPublicKey, (...args) => {
+addon.gm.buildDo83(nonceS, pcdPublicKey, pcdPrivateKey, icPublicKey, (...args) => {
   console.log('cb called', args);
 });
 

@@ -1,0 +1,16 @@
+{
+  "name": "pace",
+  "version": "1.0.0",
+  "description": "ICAO PACE protocol implementation",
+  "main": "index.js",
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "keywords": [
+    "icao",
+    "pace"
+  ],
+  "author": "monai",
+  "license": "ISC",
+  "gypfile": true
+}

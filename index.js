@@ -8,4 +8,4 @@ try {
   addon = require('./build/Release/addon.node');
 }
 
-return addon;
+module.exports = addon;

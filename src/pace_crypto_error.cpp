@@ -5,16 +5,20 @@
 
 namespace pace {
 
-crypto_error::crypto_error() {
-  err = ERR_get_error();
-  char buf[0xff];
-  ERR_error_string_n(err, buf, sizeof(buf));
-  message = std::string(buf);
-
-  capture();
+void crypto_error::capture() {
+  capture(std::string());
 }
 
-void crypto_error::capture() {
+void crypto_error::capture(std::string message) {
+  this->message = message;
+
+  err = ERR_get_error();
+  if (err > 0 && message.empty()) {
+    char buf[0xff];
+    ERR_error_string_n(err, buf, sizeof(buf));
+    message = std::string(buf);
+  }
+
   clear();
   while (auto err = ERR_get_error()) {
     char buf[0xff];
@@ -39,11 +43,15 @@ napi_status crypto_error::reason_string(napi_env env, napi_value* result) {
   return napi_create_string_utf8(env, ls, NAPI_AUTO_LENGTH, result);
 }
 
-napi_status crypto_error::to_napi_error(napi_env env, napi_value* error) {
+napi_status crypto_error::to_napi_error(napi_env env,  napi_value* error) {
   napi_value msg;
   NAPI_CALL_RETURN(
       napi_create_string_utf8(env, message.c_str(), message.size(), &msg));
   NAPI_CALL_RETURN(napi_create_error(env, nullptr, msg, error));
+
+  if (err == 0) {
+    return napi_ok;
+  }
 
   napi_value library;
   napi_value function;

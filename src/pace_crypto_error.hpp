@@ -13,11 +13,11 @@ class crypto_error : public std::vector<std::string> {
   unsigned long err;
   std::string message;
 
-  crypto_error();
+  void capture();
+  void capture(std::string message);
   napi_status to_napi_error(napi_env env, napi_value* error);
 
  private:
-  void capture();
   napi_status library_string(napi_env env, napi_value* result);
   napi_status function_string(napi_env env, napi_value* result);
   napi_status reason_string(napi_env env, napi_value* result);

@@ -121,6 +121,7 @@ void map_execute(napi_env env, void* data) {
   nid = OBJ_sn2nid(worker_data->curve_name.c_str());
   if (nid == OBJ_undef) {
     status = 1;
+    worker_data->error.capture("Unknown curve name");
   }
 
   if (status == 0) {
@@ -206,17 +207,12 @@ void map_execute(napi_env env, void* data) {
     EC_POINT_free(generator);
   }
 
-  if (ret != 1 && status != 0) {
-    worker_data->error = crypto_error();
+  if ((ret != 1 || status != 0) && worker_data->error.message.empty()) {
+    worker_data->error.capture();
   }
 }
 void map_complete(napi_env env, napi_status status, void* data) {
   map_data* worker_data = static_cast<map_data*>(data);
-
-  if (!worker_data->error_code.empty() || !worker_data->error_message.empty()) {
-    napi_throw_error(env, worker_data->error_code.c_str(),
-                     worker_data->error_message.c_str());
-  }
 
   napi_value global;
   NAPI_CALL_RETURN_VOID(env, napi_get_global(env, &global));
@@ -233,7 +229,7 @@ void map_complete(napi_env env, napi_status status, void* data) {
       env, napi_get_reference_value(env, worker_data->callback, &callback));
 
   std::vector<napi_value> argv = std::vector<napi_value>();
-  if (worker_data->error.err != 0) {
+  if (!worker_data->error.message.empty()) {
     napi_value error;
     NAPI_CALL_RETURN_VOID(env, worker_data->error.to_napi_error(env, &error));
 

@@ -64,7 +64,7 @@ const nonceS = Buffer.from([
 
 console.log('nonce: ', nonceS);
 
-addon.gm.buildDo83(nonceS, pcdPublicKey, pcdPrivateKey, icPublicKey, (...args) => {
+addon.gm.map(pcdPrivateKey, icPublicKey, nonceS, 'brainpoolP256r1', (...args) => {
   console.log('cb called', args);
 });
 

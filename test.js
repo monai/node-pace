@@ -69,6 +69,5 @@ addon.gm.map(pcdPrivateKey, icPublicKey, nonceS, 'brainpoolP256r1', (...args) =>
 });
 
 process.on('uncaughtException', error => {
-  console.log('error', error.code);
-  console.log(error.message);
+  console.error(`uncaughtException code: ${error.code}, message: ${error.message}`);
 });

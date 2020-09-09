@@ -64,8 +64,14 @@ const nonceS = Buffer.from([
 
 console.log('nonce: ', nonceS);
 
-addon.gm.map(pcdPrivateKey, icPublicKey, nonceS, 'brainpoolP256r1', (...args) => {
-  console.log('cb called', args);
+addon.gm.map(pcdPrivateKey, icPublicKey, nonceS, 'brainpoolP256r1', (error, generator) => {
+  console.log('generator', generator);
+
+  addon.gm.generateKeys(generator, 'brainpoolP256r1', (error, ephemeralPublicKey, ephemeralPrivateKey) => {
+    console.error(error);
+    console.log(ephemeralPublicKey);
+    console.log(ephemeralPrivateKey);
+  });
 });
 
 process.on('uncaughtException', error => {

@@ -20,10 +20,7 @@ struct map_data {
 
   std::vector<unsigned char> generator;
 
-  std::string error_code;
-  std::string error_message;
   crypto_error error;
-
   napi_ref callback;
   napi_async_work work;
 };

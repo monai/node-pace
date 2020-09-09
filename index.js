@@ -5,7 +5,17 @@ let addon;
 try {
   addon = require('./build/Debug/addon.node');
 } catch (ex) {
-  addon = require('./build/Release/addon.node');
+  try {
+    addon = require('./build/Release/addon.node');
+  } catch (ex) {}
+}
+
+if (!addon) {
+  try {
+    addon = require('./build/DerivedData/binding/Build/Products/Debug/addon.node');
+  } catch (ex) {
+    addon = require('./build/DerivedData/binding/Build/Products/Release/addon.node');
+  }
 }
 
 module.exports = addon;

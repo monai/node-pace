@@ -13,6 +13,8 @@
         "src/pace_ecdh_gm_napi.cpp",
         "src/pace_ecdh_gm_map_napi.hpp",
         "src/pace_ecdh_gm_map_napi.cpp",
+        "src/pace_ecdh_gm_generate_keys_napi.hpp",
+        "src/pace_ecdh_gm_generate_keys_napi.cpp",
       ]
     }
   ]

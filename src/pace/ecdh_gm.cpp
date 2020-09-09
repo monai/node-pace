@@ -3,60 +3,6 @@
 namespace pace {
 namespace ecdh_gm {
 
-int calculate_ephemeral_key(EC_KEY* pcd_key_pair,
-                            EC_POINT* ic_public_key,
-                            std::vector<unsigned char>& nonce,
-                            EC_KEY* ephemeral_key_pair) {
-  int ret = 1;
-  int status = 0;
-
-  const EC_GROUP* group;
-  EC_POINT* shared_secret = nullptr;
-  EC_POINT* generator = nullptr;
-
-  if (ret == 1 && status == 0) {
-    group = EC_KEY_get0_group(pcd_key_pair);
-    if (group == nullptr) {
-      status = 1;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    shared_secret = EC_POINT_new(group);
-    if (shared_secret == nullptr) {
-      status = 2;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    generator = EC_POINT_new(group);
-    if (generator == nullptr) {
-      status = 3;
-    }
-  }
-
-  if (ret == 1 && status == 0) {
-    ret = calculate_shared_secret(pcd_key_pair, ic_public_key, shared_secret);
-  }
-
-  if (ret == 1 && status == 0) {
-    ret = map_nonce_to_generator(group, nonce, shared_secret, generator);
-  }
-
-  if (ret == 1 && status == 0) {
-    ret = generate_key_pair(group, generator, ephemeral_key_pair);
-  }
-
-  if (shared_secret != nullptr) {
-    EC_POINT_free(shared_secret);
-  }
-  if (generator != nullptr) {
-    EC_POINT_free(generator);
-  }
-
-  return ret;
-}
-
 int generate_key_pair(const EC_GROUP* group,
                       EC_POINT* generator,
                       EC_KEY* key_pair) {

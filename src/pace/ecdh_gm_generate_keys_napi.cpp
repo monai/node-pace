@@ -27,14 +27,14 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
   NAPI_CALL(env, napi_typeof(env, argv[1], &value_type));
   if (value_type != napi_string) {
     napi_throw_type_error(env, "ERR_INVALID_ARG_TYPE",
-                          "The fourth argument must be a string");
+                          "The second argument must be a string");
     return nullptr;
   }
 
   NAPI_CALL(env, napi_typeof(env, argv[2], &value_type));
   if (value_type != napi_function) {
     napi_throw_type_error(env, "ERR_INVALID_ARG_TYPE",
-                          "The fifth argument must be a function");
+                          "The third argument must be a function");
     return nullptr;
   }
 
@@ -63,9 +63,9 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
   worker_data->curve_name = std::string(curve_name, curve_namel);
   worker_data->callback = callback;
 
-  NAPI_CALL(env, napi_create_async_work(env, nullptr, resource_name,
-                                        generate_keys_execute, generate_keys_complete,
-                                        worker_data, &worker_data->work));
+  NAPI_CALL(env, napi_create_async_work(
+                     env, nullptr, resource_name, generate_keys_execute,
+                     generate_keys_complete, worker_data, &worker_data->work));
 
   NAPI_CALL(env, napi_queue_async_work(env, worker_data->work));
 
@@ -194,9 +194,13 @@ void generate_keys_complete(napi_env env, napi_status status, void* data) {
     napi_value undefined;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
 
+    napi_value key_pair;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &key_pair));
+    NAPI_CALL_RETURN_VOID(env, napi_set_element(env, key_pair, 0, public_key));
+    NAPI_CALL_RETURN_VOID(env, napi_set_element(env, key_pair, 1, private_key));
+
     argv.push_back(undefined);
-    argv.push_back(public_key);
-    argv.push_back(private_key);
+    argv.push_back(key_pair);
   }
 
   delete worker_data;

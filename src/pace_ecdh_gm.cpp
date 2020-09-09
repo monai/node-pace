@@ -44,7 +44,7 @@ int calculate_ephemeral_key(EC_KEY* pcd_key_pair,
   }
 
   if (ret == 1 && status == 0) {
-    ret = map_domain_parameters(group, generator, ephemeral_key_pair);
+    ret = generate_key_pair(group, generator, ephemeral_key_pair);
   }
 
   if (shared_secret != nullptr) {
@@ -57,9 +57,9 @@ int calculate_ephemeral_key(EC_KEY* pcd_key_pair,
   return ret;
 }
 
-int map_domain_parameters(const EC_GROUP* group,
-                          EC_POINT* generator,
-                          EC_KEY* key_pair) {
+int generate_key_pair(const EC_GROUP* group,
+                      EC_POINT* generator,
+                      EC_KEY* key_pair) {
   int ret = 1;
   int status = 0;
 

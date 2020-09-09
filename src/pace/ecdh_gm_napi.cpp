@@ -1,6 +1,6 @@
-#include "napi.h"
-#include "pace_ecdh_gm.hpp"
-#include "pace_ecdh_gm_napi.hpp"
+#include "../napi.h"
+#include "ecdh_gm.hpp"
+#include "ecdh_gm_napi.hpp"
 
 #include <openssl/obj_mac.h>
 
@@ -96,8 +96,8 @@ void build_do83_execute(napi_env env, void* data) {
   int status = 0;
   size_t len;
 
-  //  ec_key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-  pcd_key_pair = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
+  pcd_key_pair = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+  // pcd_key_pair = EC_KEY_new_by_curve_name(NID_brainpoolP256r1);
   if (pcd_key_pair == nullptr) {
     status = 1;
   }

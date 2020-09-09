@@ -1,5 +1,5 @@
-#include "napi.h"
-#include "pace_crypto_error.hpp"
+#include "../napi.h"
+#include "crypto_error.hpp"
 
 #include <openssl/err.h>
 

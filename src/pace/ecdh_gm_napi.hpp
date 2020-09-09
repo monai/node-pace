@@ -1,7 +1,7 @@
 #ifndef pace_ecdh_gm_napi_hpp
 #define pace_ecdh_gm_napi_hpp
 
-#include "pace_crypto_error.hpp"
+#include "crypto_error.hpp"
 
 #include <node_api.h>
 

@@ -1,6 +1,6 @@
-#include "napi.h"
-#include "pace_ecdh_gm.hpp"
-#include "pace_ecdh_gm_map_napi.hpp"
+#include "../napi.h"
+#include "ecdh_gm.hpp"
+#include "ecdh_gm_map_napi.hpp"
 
 #include <openssl/ec.h>
 #include <openssl/objects.h>

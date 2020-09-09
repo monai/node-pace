@@ -1,4 +1,4 @@
-#include "pace_ecdh_gm.hpp"
+#include "ecdh_gm.hpp"
 
 namespace pace {
 namespace ecdh_gm {

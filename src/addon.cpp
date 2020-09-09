@@ -1,7 +1,7 @@
 #include "napi.h"
-#include "pace_ecdh_gm_napi.hpp"
-#include "pace_ecdh_gm_map_napi.hpp"
-#include "pace_ecdh_gm_generate_keys_napi.hpp"
+#include "pace/ecdh_gm_napi.hpp"
+#include "pace/ecdh_gm_map_napi.hpp"
+#include "pace/ecdh_gm_generate_keys_napi.hpp"
 
 #include <node_api.h>
 

@@ -8,11 +8,6 @@
 namespace pace {
 namespace ecdh_gm {
 
-int calculate_ephemeral_key(EC_KEY* pcd_key_pair,
-                            EC_POINT* ic_public_key,
-                            std::vector<unsigned char>& nonce,
-                            EC_KEY* ephemeral_key_pair);
-
 int generate_key_pair(const EC_GROUP* group,
                       EC_POINT* generator,
                       EC_KEY* key_pair);

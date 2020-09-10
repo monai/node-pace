@@ -218,7 +218,6 @@ void map_complete(napi_env env, napi_status status, void* data) {
   NAPI_CALL_RETURN_VOID(env, napi_get_global(env, &global));
 
   napi_value generator;
-
   NAPI_CALL_RETURN_VOID(
       env, napi_create_buffer_copy(env, worker_data->generator.size(),
                                    worker_data->generator.data(), nullptr,

@@ -8,16 +8,16 @@ namespace addon {
 
 napi_value Init(napi_env env, napi_value exports) {
   napi_value gm;
-  napi_value gm_map_fn;
-  napi_value gm_generate_keys_fn;
 
   NAPI_CALL(env, napi_create_object(env, &gm));
 
+  napi_value gm_map_fn;
   NAPI_CALL(env, napi_create_function(env, "map", NAPI_AUTO_LENGTH,
                                       pace::ecdh_gm_map::napi::map, nullptr,
                                       &gm_map_fn));
   NAPI_CALL(env, napi_set_named_property(env, gm, "map", gm_map_fn));
 
+  napi_value gm_generate_keys_fn;
   NAPI_CALL(env, napi_create_function(
                      env, "generateKeys", NAPI_AUTO_LENGTH,
                      pace::ecdh_gm_generate_keys::napi::generate_keys, nullptr,

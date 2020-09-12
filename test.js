@@ -86,7 +86,7 @@ function testGenerateKeys() {
       return;
     }
 
-    addon.gm.generateKeys(generator, 'brainpoolP256r1', (error, ephPkPcdCalc, ephSkPcdCalc) => {
+    addon.gm.generateKeys(generator, 'brainpoolP256r1', (error, [ephPkPcdCalc, ephSkPcdCalc]) => {
       if (error) {
         console.error('generateKeys error', error);
         return;

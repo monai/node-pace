@@ -22,7 +22,8 @@ module.exports = addon;
 
 [
   'map',
-  'generateKeys'
+  'generateKeys',
+  'keyAgreement',
 ].reduce((acc, fn, i) => {
   acc[fn + 'P'] = util.promisify(addon.gm[fn]);
   return acc;

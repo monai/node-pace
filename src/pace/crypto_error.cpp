@@ -30,16 +30,28 @@ void crypto_error::capture(std::string message) {
 
 napi_status crypto_error::library_string(napi_env env, napi_value* result) {
   const char* ls = ERR_lib_error_string(err);
+  if (ls == nullptr) {
+    return napi_generic_failure;
+  }
+
   return napi_create_string_utf8(env, ls, NAPI_AUTO_LENGTH, result);
 }
 
 napi_status crypto_error::function_string(napi_env env, napi_value* result) {
   const char* ls = ERR_func_error_string(err);
+  if (ls == nullptr) {
+    return napi_generic_failure;
+  }
+
   return napi_create_string_utf8(env, ls, NAPI_AUTO_LENGTH, result);
 }
 
 napi_status crypto_error::reason_string(napi_env env, napi_value* result) {
   const char* ls = ERR_reason_error_string(err);
+  if (ls == nullptr) {
+    return napi_generic_failure;
+  }
+
   return napi_create_string_utf8(env, ls, NAPI_AUTO_LENGTH, result);
 }
 

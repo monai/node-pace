@@ -66,11 +66,11 @@ int map_nonce_to_generator(const EC_GROUP* group,
   int ret = 1;
   int status = 0;
 
-  BIGNUM* bn_nonce_s = BN_new();
+  BIGNUM* bn_nonce = BN_new();
   const EC_POINT* input_generator;
   EC_POINT* intermediate_generator = nullptr;
 
-  BN_bin2bn(nonce.data(), 16, bn_nonce_s);
+  BN_bin2bn(nonce.data(), 16, bn_nonce);
 
   input_generator = EC_GROUP_get0_generator(group);
   if (input_generator == nullptr) {
@@ -87,7 +87,7 @@ int map_nonce_to_generator(const EC_GROUP* group,
 
   if (ret == 1 && status == 0) {
     ret = EC_POINT_mul(group, intermediate_generator, 0, input_generator,
-                       bn_nonce_s, nullptr);
+                       bn_nonce, nullptr);
   }
 
   if (ret == 1 && status == 0) {
@@ -95,7 +95,7 @@ int map_nonce_to_generator(const EC_GROUP* group,
                        nullptr);
   }
 
-  BN_free(bn_nonce_s);
+  BN_free(bn_nonce);
   if (intermediate_generator != nullptr) {
     EC_POINT_free(intermediate_generator);
   }

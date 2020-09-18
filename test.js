@@ -54,6 +54,14 @@ const ephSharedSecret = buffer`
   82A9996D B4A31502 0B273319 7DB84925
 `;
 
+const mappedGeneratorG = buffer`
+  04
+  8CED63C9 1426D4F0 EB1435E7 CB1D74A4
+  6723A0AF 21C89634 F65A9AE8 7A9265E2,
+  8C879506 743F8611 AC33645C 5B985C80
+  B5F09A0B 83407C1B 6A4D857A E76FE522
+`;
+
 testKeyAgreement();
 
 function testKeyAgreement() {
@@ -76,6 +84,7 @@ function testMap() {
     }
 
     console.log('generator', generator);
+    assert.ok(mappedGeneratorG.equals(generator));
   });
 }
 

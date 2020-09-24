@@ -27,10 +27,6 @@ int generate_key_pair(const EC_GROUP* group,
   }
 
   if (ret == 1 && status == 0) {
-    ret = EC_GROUP_set_generator(new_group, generator, order, cofactor);
-  }
-
-  if (ret == 1 && status == 0) {
     ret = EC_KEY_set_group(key_pair, new_group);
   }
 

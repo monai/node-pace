@@ -66,7 +66,7 @@ int map_nonce_to_generator(const EC_GROUP* group,
   const EC_POINT* input_generator;
   EC_POINT* intermediate_generator = nullptr;
 
-  BN_bin2bn(nonce.data(), 16, bn_nonce);
+  BN_bin2bn(nonce.data(), (int)nonce.size(), bn_nonce);
 
   input_generator = EC_GROUP_get0_generator(group);
   if (input_generator == nullptr) {

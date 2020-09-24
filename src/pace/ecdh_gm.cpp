@@ -45,20 +45,8 @@ int generate_key_pair(const EC_GROUP* group,
   }
 
   return ret;
-
-  //  return new ECParameterSpec(
-  //                             new EllipticCurve(
-  //                                               new ECFieldFp(p),
-  //                                               a,
-  //                                               b
-  //                                               ),
-  //                             ephemeralGenerator,
-  //                             order,
-  //                             cofactor
-  //                             );
 }
 
-// G~ = [s]G + H
 int map_nonce_to_generator(const EC_GROUP* group,
                            std::vector<unsigned char>& nonce,
                            EC_POINT* shared_secret,
@@ -101,18 +89,6 @@ int map_nonce_to_generator(const EC_GROUP* group,
   }
 
   return ret;
-
-  //  D~ = (p, a, b, G~, n, h) where G~ = [s]G + H
-
-  //  ECPoint ephemeralGenerator = Util.add(
-  //                                        Util.multiply(
-  //                                                      Util.os2i(nonceS),
-  //                                                      generator,
-  //                                                      staticParameters
-  //                                                      ),
-  //                                        sharedSecretPointH,
-  //                                        staticParameters
-  //                                        );
 }
 
 int calculate_shared_secret(EC_KEY* pcd_key_pair,

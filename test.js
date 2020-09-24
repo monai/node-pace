@@ -62,7 +62,7 @@ const mappedGeneratorG = buffer`
   B5F09A0B 83407C1B 6A4D857A E76FE522
 `;
 
-testKeyAgreement();
+testMap();
 
 function testKeyAgreement() {
   addon.gm.keyAgreement(ephSkPcd, ephPkIc, 'brainpoolP256r1', (error, sharedSecret) => {

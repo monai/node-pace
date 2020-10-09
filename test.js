@@ -65,7 +65,7 @@ const mappedGeneratorG = buffer`
 testMap();
 
 function testKeyAgreement() {
-  addon.gm.keyAgreement(ephSkPcd, ephPkIc, 'brainpoolP256r1', (error, sharedSecret) => {
+  addon.ecdh.gm.keyAgreement(ephSkPcd, ephPkIc, 'brainpoolP256r1', (error, sharedSecret) => {
     if (error) {
       console.error('keyAgreement error', error);
       return;
@@ -77,7 +77,7 @@ function testKeyAgreement() {
 }
 
 function testMap() {
-  addon.gm.map(mapSkPcd, mapPkIc, nonceS, 'brainpoolP256r1', (error, generator) => {
+  addon.ecdh.gm.map(mapSkPcd, mapPkIc, nonceS, 'brainpoolP256r1', (error, generator) => {
     if (error) {
       console.error('map error', error);
       return;
@@ -89,13 +89,13 @@ function testMap() {
 }
 
 function testGenerateKeys() {
-  addon.gm.map(mapSkPcd, mapPkIc, nonceS, 'brainpoolP256r1', (error, generator) => {
+  addon.ecdh.gm.map(mapSkPcd, mapPkIc, nonceS, 'brainpoolP256r1', (error, generator) => {
     if (error) {
       console.error('map error', error);
       return;
     }
 
-    addon.gm.generateKeys(generator, 'brainpoolP256r1', (error, [ephPkPcdCalc, ephSkPcdCalc]) => {
+    addon.ecdh.gm.generateKeys(generator, 'brainpoolP256r1', (error, [ephPkPcdCalc, ephSkPcdCalc]) => {
       if (error) {
         console.error('generateKeys error', error);
         return;

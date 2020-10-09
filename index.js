@@ -20,11 +20,9 @@ if (!addon) {
 
 module.exports = addon;
 
-[
-  'map',
-  'generateKeys',
-  'keyAgreement',
-].reduce((acc, fn, i) => {
-  acc[fn + 'P'] = util.promisify(addon.gm[fn]);
-  return acc;
-}, module.exports.gm);
+Object
+  .keys(addon.ecdh.gm)
+  .reduce((acc, fn, i) => {
+    acc[fn + 'P'] = util.promisify(addon.ecdh.gm[fn]);
+    return acc;
+  }, module.exports.ecdh.gm);

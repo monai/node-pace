@@ -8,9 +8,14 @@
 namespace addon {
 
 napi_value Init(napi_env env, napi_value exports) {
+  napi_value ecdh;
   napi_value gm;
 
+  NAPI_CALL(env, napi_create_object(env, &ecdh));
   NAPI_CALL(env, napi_create_object(env, &gm));
+
+  NAPI_CALL(env, napi_set_named_property(env, exports, "ecdh", ecdh));
+  NAPI_CALL(env, napi_set_named_property(env, ecdh, "gm", gm));
 
   napi_value gm_map_fn;
   NAPI_CALL(env, napi_create_function(env, "map", NAPI_AUTO_LENGTH,
@@ -33,8 +38,6 @@ napi_value Init(napi_env env, napi_value exports) {
                      &gm_key_agreement_fn));
   NAPI_CALL(env, napi_set_named_property(env, gm, "keyAgreement",
                                          gm_key_agreement_fn));
-
-  NAPI_CALL(env, napi_set_named_property(env, exports, "gm", gm));
 
   return exports;
 }

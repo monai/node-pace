@@ -4,6 +4,8 @@
 /* eslint-disable global-require */
 const { promisify } = require('util');
 
+const { entries } = Object;
+
 let addon;
 
 try {
@@ -32,11 +34,16 @@ if (!addon) {
 
 module.exports = addon;
 
-for (const [type, mapping] of Object.entries(addon)) {
-  for (const [mappingName, fns] of Object.entries(mapping)) {
+for (const [type, mapping] of entries(addon)) {
+  for (const [mappingName, fns] of entries(mapping)) {
     addon[type][mappingName] = {
       ...fns,
-      ...Object.fromEntries(Object.entries(fns).map(([key, val]) => [`${key}P`, promisify(val)])),
+      ...entries(fns)
+        .map(([key, val]) => [`${key}P`, promisify(val)])
+        .reduce((acc, [key, val]) => {
+          acc[key] = val;
+          return acc;
+        }, {}),
     };
   }
 }

@@ -1,4 +1,3 @@
-
 #ifndef napi_h
 #define napi_h
 

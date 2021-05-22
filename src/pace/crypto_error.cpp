@@ -16,7 +16,7 @@ void crypto_error::capture(std::string message) {
   if (err > 0 && message.empty()) {
     char buf[0xff];
     ERR_error_string_n(err, buf, sizeof(buf));
-    message = std::string(buf);
+    this->message = std::string(buf);
   }
 
   clear();

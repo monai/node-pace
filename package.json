@@ -12,5 +12,15 @@
   ],
   "author": "monai",
   "license": "ISC",
-  "gypfile": true
+  "gypfile": true,
+  "devDependencies": {
+    "@monai/eslint-config-base": "0.0.4",
+    "@monai/eslint-config-node": "0.0.4",
+    "@monai/eslint-config-style": "0.0.4",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-node": "^11.1.0"
+  }
 }

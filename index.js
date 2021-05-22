@@ -9,17 +9,24 @@ let addon;
 try {
   addon = require('./build/Debug/addon.node');
 } catch (ex1) {
+  assertError(ex1);
   try {
     addon = require('./build/Release/addon.node');
-  // eslint-disable-next-line no-empty
-  } catch (ex2) {}
+  } catch (ex2) {
+    assertError(ex2);
+  }
 }
 
 if (!addon) {
   try {
     addon = require('./build/DerivedData/binding/Build/Products/Debug/addon.node');
-  } catch (ex) {
-    addon = require('./build/DerivedData/binding/Build/Products/Release/addon.node');
+  } catch (ex1) {
+    assertError(ex1);
+    try {
+      addon = require('./build/DerivedData/binding/Build/Products/Release/addon.node');
+    } catch (ex2) {
+      assertError(ex2);
+    }
   }
 }
 
@@ -31,3 +38,9 @@ Object
     acc[`${fn}P`] = promisify(addon.ecdh.gm[fn]);
     return acc;
   }, module.exports.ecdh.gm);
+
+function assertError(ex) {
+  if (ex.code !== 'MODULE_NOT_FOUND') {
+    throw ex;
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "@monai/pace",
   "version": "1.0.0",
-  "description": "ICAO PACE routines",
+  "description": "ICAO Doc 9303 PACE protocol mapping routines",
   "main": "index.js",
   "gypfile": true,
   "files": [

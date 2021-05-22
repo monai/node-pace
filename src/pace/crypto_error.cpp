@@ -86,9 +86,12 @@ napi_status crypto_error::to_napi_error(napi_env env, napi_value* error) {
     cur_msg = at(i);
     NAPI_CALL_RETURN(
         napi_create_string_utf8(env, cur_msg.c_str(), cur_msg.size(), &msg));
-    NAPI_CALL_RETURN(
-        napi_set_element(env, *error, static_cast<uint32_t>(i), msg));
+    NAPI_CALL_RETURN(napi_set_element(env, openssl_error_stack,
+                                      static_cast<uint32_t>(i), msg));
   }
+
+  NAPI_CALL_RETURN(napi_set_named_property(env, *error, "opensslErrorStack",
+                                           openssl_error_stack));
 
   return napi_ok;
 }

@@ -5,7 +5,7 @@ ICAO Doc 9303 PACE protocol mapping routines.
 ## Support
 
 Algorithm           | Support
--                   | -
+------------------- | -------
 `id-PACE-DH-GM`     | ❌
 `id-PACE-ECDH-GM`   | ✅
 `id-PACE-DH-IM`     | ❌

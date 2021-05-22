@@ -32,12 +32,14 @@ if (!addon) {
 
 module.exports = addon;
 
-Object
-  .keys(addon.ecdh.gm)
-  .reduce((acc, fn) => {
-    acc[`${fn}P`] = promisify(addon.ecdh.gm[fn]);
-    return acc;
-  }, module.exports.ecdh.gm);
+for (const [type, mapping] of Object.entries(addon)) {
+  for (const [mappingName, fns] of Object.entries(mapping)) {
+    addon[type][mappingName] = {
+      ...fns,
+      ...Object.fromEntries(Object.entries(fns).map(([key, val]) => [`${key}P`, promisify(val)])),
+    };
+  }
+}
 
 function assertError(ex) {
   if (ex.code !== 'MODULE_NOT_FOUND') {

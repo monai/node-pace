@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "ICAO PACE routines",
   "main": "index.js",
+  "gypfile": true,
+  "files": [
+    "src/**/*.{h,hpp,cpp}",
+    "binding.gyp"
+  ],
   "scripts": {
     "install": "node-gyp rebuild",
     "gyp:xcode": "NODE_GYP_FORCE_PYTHON=/usr/bin/python node-gyp configure --debug -- -f xcode"
@@ -13,9 +18,6 @@
     "doc 9303",
     "pace"
   ],
-  "author": "monai",
-  "license": "ISC",
-  "gypfile": true,
   "devDependencies": {
     "@monai/eslint-config-base": "0.0.4",
     "@monai/eslint-config-node": "0.0.4",
@@ -33,5 +35,7 @@
   "bugs": {
     "url": "https://github.com/monai/node-pace/issues"
   },
-  "homepage": "https://github.com/monai/node-pace#readme"
+  "homepage": "https://github.com/monai/node-pace#readme",
+  "author": "monai",
+  "license": "ISC"
 }

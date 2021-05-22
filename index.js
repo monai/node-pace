@@ -1,13 +1,18 @@
-const util = require('util');
+/* eslint-disable node/no-unpublished-require */
+/* eslint-disable node/no-missing-require */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable global-require */
+const { promisify } = require('util');
 
 let addon;
 
 try {
   addon = require('./build/Debug/addon.node');
-} catch (ex) {
+} catch (ex1) {
   try {
     addon = require('./build/Release/addon.node');
-  } catch (ex) {}
+  // eslint-disable-next-line no-empty
+  } catch (ex2) {}
 }
 
 if (!addon) {
@@ -22,7 +27,7 @@ module.exports = addon;
 
 Object
   .keys(addon.ecdh.gm)
-  .reduce((acc, fn, i) => {
-    acc[fn + 'P'] = util.promisify(addon.ecdh.gm[fn]);
+  .reduce((acc, fn) => {
+    acc[`${fn}P`] = promisify(addon.ecdh.gm[fn]);
     return acc;
   }, module.exports.ecdh.gm);

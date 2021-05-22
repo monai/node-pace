@@ -1,7 +1,7 @@
 {
-  "name": "pace",
+  "name": "@monai/pace",
   "version": "1.0.0",
-  "description": "ICAO PACE protocol implementation",
+  "description": "ICAO PACE routines",
   "main": "index.js",
   "scripts": {
     "install": "node-gyp rebuild",

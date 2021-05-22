@@ -4,7 +4,8 @@
   "description": "ICAO PACE protocol implementation",
   "main": "index.js",
   "scripts": {
-    "install": "node-gyp rebuild"
+    "install": "node-gyp rebuild",
+    "gyp:xcode": "NODE_GYP_FORCE_PYTHON=/usr/bin/python node-gyp configure --debug -- -f xcode"
   },
   "keywords": [
     "icao",

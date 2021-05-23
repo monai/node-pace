@@ -12,7 +12,7 @@ namespace napi {
 
 napi_value map(napi_env env, napi_callback_info args) {
   size_t argc = 5;
-  napi_value argv[argc];
+  napi_value* argv = new napi_value[argc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
 
   bool is_buffer;
@@ -96,6 +96,8 @@ napi_value map(napi_env env, napi_callback_info args) {
 
   napi_value out;
   NAPI_CALL(env, napi_get_undefined(env, &out));
+
+  delete[] argv;
 
   return out;
 }

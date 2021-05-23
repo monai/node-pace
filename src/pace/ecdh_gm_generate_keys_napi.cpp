@@ -11,7 +11,8 @@ namespace napi {
 
 napi_value generate_keys(napi_env env, napi_callback_info args) {
   size_t argc = 3;
-  napi_value argv[argc];
+  const size_t argcc = argc;
+  napi_value argv[argcc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
 
   bool is_buffer;

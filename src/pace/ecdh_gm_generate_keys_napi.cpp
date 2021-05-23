@@ -11,7 +11,7 @@ namespace napi {
 
 napi_value generate_keys(napi_env env, napi_callback_info args) {
   size_t argc = 3;
-  napi_value argv[argc];
+  napi_value* argv = new napi_value[argc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
 
   bool is_buffer;
@@ -71,6 +71,8 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
 
   napi_value out;
   NAPI_CALL(env, napi_get_undefined(env, &out));
+
+  delete[] argv;
 
   return out;
 }
@@ -205,7 +207,7 @@ void generate_keys_complete(napi_env env, napi_status status, void* data) {
 
   delete worker_data;
 
-  napi_value argva[argv.size()];
+  napi_value* argva = new napi_value[argv.size()];
   std::copy(argv.begin(), argv.end(), argva);
 
   NAPI_CALL_RETURN_VOID(env, napi_call_function(env, global, callback,

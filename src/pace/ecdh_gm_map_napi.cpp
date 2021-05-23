@@ -58,8 +58,6 @@ napi_value map(napi_env env, napi_callback_info args) {
   std::vector<unsigned char> pcd_private_key;
   std::vector<unsigned char> ic_public_key;
   std::vector<unsigned char> nonce;
-  size_t curve_namel = 0xff;
-  char* curve_name = new char[curve_namel];
 
   NAPI_CALL(env, napi_get_buffer_info(env, argv[0], (void**)&data, &datal));
   pcd_private_key = std::vector<unsigned char>(data, data + datal);
@@ -70,7 +68,8 @@ napi_value map(napi_env env, napi_callback_info args) {
   NAPI_CALL(env, napi_get_buffer_info(env, argv[2], (void**)&data, &datal));
   nonce = std::vector<unsigned char>(data, data + datal);
 
-  curve_name = new char[0xff];
+  size_t curve_namel = 0xff;
+  char* curve_name = new char[curve_namel];
   NAPI_CALL(env, napi_get_value_string_utf8(env, argv[3], curve_name,
                                             curve_namel, &datal));
 

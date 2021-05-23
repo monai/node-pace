@@ -41,13 +41,12 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
   size_t datal;
   unsigned char* data;
   std::vector<unsigned char> generator;
-  size_t curve_namel = 0xff;
-  char* curve_name = new char[curve_namel];
 
   NAPI_CALL(env, napi_get_buffer_info(env, argv[0], (void**)&data, &datal));
   generator = std::vector<unsigned char>(data, data + datal);
 
-  curve_name = new char[0xff];
+  size_t curve_namel = 0xff;
+  char* curve_name = new char[curve_namel];
   NAPI_CALL(env, napi_get_value_string_utf8(env, argv[1], curve_name,
                                             curve_namel, &datal));
 

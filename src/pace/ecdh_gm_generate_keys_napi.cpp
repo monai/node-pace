@@ -155,7 +155,7 @@ void generate_keys_execute(napi_env env, void* data) {
     EC_KEY_free(key_pair);
   }
 
-  if (key_pair != nullptr) {
+  if (generator != nullptr) {
     EC_POINT_free(generator);
   }
 

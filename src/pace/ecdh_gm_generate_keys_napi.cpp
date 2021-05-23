@@ -207,7 +207,7 @@ void generate_keys_complete(napi_env env, napi_status status, void* data) {
 
   delete worker_data;
 
-  napi_value argva[argv.size()];
+  napi_value* argva = new napi_value[argv.size()];
   std::copy(argv.begin(), argv.end(), argva);
 
   NAPI_CALL_RETURN_VOID(env, napi_call_function(env, global, callback,

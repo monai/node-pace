@@ -38,9 +38,7 @@ ecdh.gm.map(skPcd, pkIc, nonce, 'prime256v1', (err, generator) => {
 
 ## API
 
-### id-PACE-ECDH-GM
-
-#### ecdh.gh.map(skPcd, pkIc, nonce, curve, callback)
+### ecdh.gm.map(skPcd, pkIc, nonce, curve, callback)
 
 - `skPcd` \<Buffer\> PCD private key.
 - `pkIc` \<Buffer\> IC public key.
@@ -50,7 +48,7 @@ ecdh.gm.map(skPcd, pkIc, nonce, 'prime256v1', (err, generator) => {
   - `err` \<Error\>
   - `generator` \<Buffer\> Mapped generator.
 
-#### ecdh.gh.generateKeys(generator, curve, callback)
+### ecdh.gm.generateKeys(generator, curve, callback)
 
 - `generator` \<Buffer\> The curve generator point.
 - `curve` \<string\> Name of the curve to use.

@@ -21,13 +21,11 @@ struct map_data {
   std::vector<unsigned char> generator;
 
   crypto_error error;
-  napi_ref callback;
-  napi_async_work work;
 };
 
 napi_value map(napi_env env, napi_callback_info args);
 void map_execute(napi_env env, void* data);
-void map_complete(napi_env env, napi_status status, void* data);
+napi_value map_complete(napi_env env, void* data);
 
 }  // namespace napi
 }  // namespace ecdh_gm_map

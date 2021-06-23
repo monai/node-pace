@@ -3,15 +3,15 @@
 #include "ecdh_gm_map_napi.hpp"
 
 #include <openssl/ec.h>
-#include <openssl/objects.h>
 #include <openssl/obj_mac.h>
+#include <openssl/objects.h>
 
 namespace pace {
 namespace ecdh_gm_map {
 namespace napi {
 
 napi_value map(napi_env env, napi_callback_info args) {
-  size_t argc = 5;
+  size_t argc = 4;
   napi_value* argv = new napi_value[argc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
 
@@ -46,13 +46,6 @@ napi_value map(napi_env env, napi_callback_info args) {
     return nullptr;
   }
 
-  NAPI_CALL(env, napi_typeof(env, argv[4], &value_type));
-  if (value_type != napi_function) {
-    napi_throw_type_error(env, "ERR_INVALID_ARG_TYPE",
-                          "The fifth argument must be a function");
-    return nullptr;
-  }
-
   size_t datal;
   unsigned char* data;
   std::vector<unsigned char> pcd_private_key;
@@ -73,30 +66,18 @@ napi_value map(napi_env env, napi_callback_info args) {
   NAPI_CALL(env, napi_get_value_string_utf8(env, argv[3], curve_name,
                                             curve_namel, &datal));
 
-  napi_ref callback;
-  NAPI_CALL(env, napi_create_reference(env, argv[4], 1, &callback));
-
-  napi_value resource_name;
-  NAPI_CALL(env, napi_create_string_utf8(env, "map", NAPI_AUTO_LENGTH,
-                                         &resource_name));
+  delete[] argv;
 
   map_data* worker_data = new map_data;
   worker_data->pcd_private_key = pcd_private_key;
   worker_data->ic_public_key = ic_public_key;
   worker_data->nonce = nonce;
   worker_data->curve_name = std::string(curve_name, curve_namel);
-  worker_data->callback = callback;
 
-  NAPI_CALL(env, napi_create_async_work(env, nullptr, resource_name,
-                                        map_execute, map_complete, worker_data,
-                                        &worker_data->work));
+  map_execute(env, worker_data);
+  napi_value out = map_complete(env, worker_data);
 
-  NAPI_CALL(env, napi_queue_async_work(env, worker_data->work));
-
-  napi_value out;
-  NAPI_CALL(env, napi_get_undefined(env, &out));
-
-  delete[] argv;
+  delete worker_data;
 
   return out;
 }
@@ -212,43 +193,22 @@ void map_execute(napi_env env, void* data) {
     worker_data->error.capture();
   }
 }
-void map_complete(napi_env env, napi_status status, void* data) {
+napi_value map_complete(napi_env env, void* data) {
   map_data* worker_data = static_cast<map_data*>(data);
 
-  napi_value global;
-  NAPI_CALL_RETURN_VOID(env, napi_get_global(env, &global));
-
-  napi_value generator;
-  NAPI_CALL_RETURN_VOID(
-      env, napi_create_buffer_copy(env, worker_data->generator.size(),
-                                   worker_data->generator.data(), nullptr,
-                                   &generator));
-
-  napi_value callback;
-  NAPI_CALL_RETURN_VOID(
-      env, napi_get_reference_value(env, worker_data->callback, &callback));
-
-  std::vector<napi_value> argv = std::vector<napi_value>();
   if (!worker_data->error.message.empty()) {
     napi_value error;
-    NAPI_CALL_RETURN_VOID(env, worker_data->error.to_napi_error(env, &error));
+    NAPI_CALL(env, worker_data->error.to_napi_error(env, &error));
 
-    argv.push_back(error);
-  } else {
-    napi_value undefined;
-    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-
-    argv.push_back(undefined);
-    argv.push_back(generator);
+    return error;
   }
 
-  delete worker_data;
+  napi_value generator;
+  NAPI_CALL(env, napi_create_buffer_copy(env, worker_data->generator.size(),
+                                         worker_data->generator.data(), nullptr,
+                                         &generator));
 
-  napi_value* argva = new napi_value[argv.size()];
-  std::copy(argv.begin(), argv.end(), argva);
-
-  NAPI_CALL_RETURN_VOID(env, napi_call_function(env, global, callback,
-                                                argv.size(), argva, nullptr));
+  return generator;
 }
 
 }  // namespace napi

@@ -20,13 +20,11 @@ struct generate_keys_data {
   std::vector<unsigned char> private_key;
 
   crypto_error error;
-  napi_ref callback;
-  napi_async_work work;
 };
 
 napi_value generate_keys(napi_env env, napi_callback_info args);
 void generate_keys_execute(napi_env env, void* data);
-void generate_keys_complete(napi_env env, napi_status status, void* data);
+napi_value generate_keys_complete(napi_env env, void* data);
 
 }  // namespace napi
 }  // namespace ecdh_gm_generate_keys

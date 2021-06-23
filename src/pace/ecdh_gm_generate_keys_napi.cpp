@@ -10,7 +10,7 @@ namespace ecdh_gm_generate_keys {
 namespace napi {
 
 napi_value generate_keys(napi_env env, napi_callback_info args) {
-  size_t argc = 3;
+  size_t argc = 2;
   napi_value* argv = new napi_value[argc];
   NAPI_CALL(env, napi_get_cb_info(env, args, &argc, argv, nullptr, nullptr));
 
@@ -31,13 +31,6 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
     return nullptr;
   }
 
-  NAPI_CALL(env, napi_typeof(env, argv[2], &value_type));
-  if (value_type != napi_function) {
-    napi_throw_type_error(env, "ERR_INVALID_ARG_TYPE",
-                          "The third argument must be a function");
-    return nullptr;
-  }
-
   size_t datal;
   unsigned char* data;
   std::vector<unsigned char> generator;
@@ -50,28 +43,16 @@ napi_value generate_keys(napi_env env, napi_callback_info args) {
   NAPI_CALL(env, napi_get_value_string_utf8(env, argv[1], curve_name,
                                             curve_namel, &datal));
 
-  napi_ref callback;
-  NAPI_CALL(env, napi_create_reference(env, argv[2], 1, &callback));
-
-  napi_value resource_name;
-  NAPI_CALL(env, napi_create_string_utf8(env, "generateKeys", NAPI_AUTO_LENGTH,
-                                         &resource_name));
+  delete[] argv;
 
   generate_keys_data* worker_data = new generate_keys_data;
   worker_data->generator = generator;
   worker_data->curve_name = std::string(curve_name, curve_namel);
-  worker_data->callback = callback;
 
-  NAPI_CALL(env, napi_create_async_work(
-                     env, nullptr, resource_name, generate_keys_execute,
-                     generate_keys_complete, worker_data, &worker_data->work));
+  generate_keys_execute(env, worker_data);
+  napi_value out = generate_keys_complete(env, worker_data);
 
-  NAPI_CALL(env, napi_queue_async_work(env, worker_data->work));
-
-  napi_value out;
-  NAPI_CALL(env, napi_get_undefined(env, &out));
-
-  delete[] argv;
+  delete worker_data;
 
   return out;
 }
@@ -162,55 +143,33 @@ void generate_keys_execute(napi_env env, void* data) {
     worker_data->error.capture();
   }
 }
-void generate_keys_complete(napi_env env, napi_status status, void* data) {
+napi_value generate_keys_complete(napi_env env, void* data) {
   generate_keys_data* worker_data = static_cast<generate_keys_data*>(data);
 
-  napi_value global;
-  NAPI_CALL_RETURN_VOID(env, napi_get_global(env, &global));
+  if (!worker_data->error.message.empty()) {
+    napi_value error;
+    NAPI_CALL(env, worker_data->error.to_napi_error(env, &error));
+
+    return error;
+  }
 
   napi_value public_key;
   napi_value private_key;
 
-  NAPI_CALL_RETURN_VOID(
-      env, napi_create_buffer_copy(env, worker_data->public_key.size(),
-                                   worker_data->public_key.data(), nullptr,
-                                   &public_key));
+  NAPI_CALL(env, napi_create_buffer_copy(env, worker_data->public_key.size(),
+                                         worker_data->public_key.data(),
+                                         nullptr, &public_key));
 
-  NAPI_CALL_RETURN_VOID(
-      env, napi_create_buffer_copy(env, worker_data->private_key.size(),
-                                   worker_data->private_key.data(), nullptr,
-                                   &private_key));
+  NAPI_CALL(env, napi_create_buffer_copy(env, worker_data->private_key.size(),
+                                         worker_data->private_key.data(),
+                                         nullptr, &private_key));
 
-  napi_value callback;
-  NAPI_CALL_RETURN_VOID(
-      env, napi_get_reference_value(env, worker_data->callback, &callback));
+  napi_value key_pair;
+  NAPI_CALL(env, napi_create_array(env, &key_pair));
+  NAPI_CALL(env, napi_set_element(env, key_pair, 0, public_key));
+  NAPI_CALL(env, napi_set_element(env, key_pair, 1, private_key));
 
-  std::vector<napi_value> argv = std::vector<napi_value>();
-  if (!worker_data->error.message.empty()) {
-    napi_value error;
-    NAPI_CALL_RETURN_VOID(env, worker_data->error.to_napi_error(env, &error));
-
-    argv.push_back(error);
-  } else {
-    napi_value undefined;
-    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-
-    napi_value key_pair;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &key_pair));
-    NAPI_CALL_RETURN_VOID(env, napi_set_element(env, key_pair, 0, public_key));
-    NAPI_CALL_RETURN_VOID(env, napi_set_element(env, key_pair, 1, private_key));
-
-    argv.push_back(undefined);
-    argv.push_back(key_pair);
-  }
-
-  delete worker_data;
-
-  napi_value* argva = new napi_value[argv.size()];
-  std::copy(argv.begin(), argv.end(), argva);
-
-  NAPI_CALL_RETURN_VOID(env, napi_call_function(env, global, callback,
-                                                argv.size(), argva, nullptr));
+  return key_pair;
 }
 
 }  // namespace napi

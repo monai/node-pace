@@ -3,6 +3,8 @@
 
 #include <openssl/err.h>
 
+#include <algorithm>
+
 namespace pace {
 
 void crypto_error::capture() {

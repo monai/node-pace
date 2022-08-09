@@ -7,11 +7,9 @@
 #include <napi.h>
 
 Napi::Value EACCleanup(const Napi::CallbackInfo &info) {
-  Napi::Env env = info.Env();
-
   EAC_cleanup();
 
-  return env.Undefined();
+  return Napi::Value();
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {

@@ -6,11 +6,11 @@
 let addon;
 
 try {
-  addon = require('./build/DerivedData/binding/Build/Products/Debug/addon.node');
+  addon = require('./build/DerivedData/binding/Build/Products/Debug/eac.node');
 } catch (ex1) {
   assertError(ex1);
   try {
-    addon = require('./build/DerivedData/binding/Build/Products/Release/addon.node');
+    addon = require('./build/DerivedData/binding/Build/Products/Release/eac.node');
   } catch (ex2) {
     assertError(ex2);
   }
@@ -18,11 +18,11 @@ try {
 
 if (!addon) {
   try {
-    addon = require('./build/Debug/addon.node');
+    addon = require('./build/Debug/eac.node');
   } catch (ex1) {
     assertError(ex1);
     try {
-      addon = require('./build/Release/addon.node');
+      addon = require('./build/Release/eac.node');
     } catch (ex2) {
       assertError(ex2);
     }

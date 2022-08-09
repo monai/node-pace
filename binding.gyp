@@ -1,19 +1,30 @@
 {
   "targets": [
     {
-      "target_name": "addon",
+      "target_name": "eac",
       "sources": [
         "src/addon.cpp",
-        "src/napi.h",
-        "src/pace/crypto_error.hpp",
-        "src/pace/crypto_error.cpp",
-        "src/pace/ecdh_gm.hpp",
-        "src/pace/ecdh_gm.cpp",
-        "src/pace/ecdh_gm_generate_keys_napi.hpp",
-        "src/pace/ecdh_gm_generate_keys_napi.cpp",
-        "src/pace/ecdh_gm_map_napi.hpp",
-        "src/pace/ecdh_gm_map_napi.cpp",
-      ]
-    }
-  ]
+        "src/Constants.hpp",
+        "src/Constants.cpp",
+        "src/Context.hpp",
+        "src/Context.cpp",
+        "src/SharedSecret.hpp",
+        "src/SharedSecret.cpp",
+        "src/PACE.hpp",
+        "src/PACE.cpp",
+        "src/SM.hpp",
+        "src/SM.cpp",
+      ],
+      "includes": [
+        "node_modules/node-addon-api/except.gypi",
+      ],
+      "include_dirs": [
+        "node_modules/node-addon-api",
+        "<!@(pkg-config --cflags-only-I libeac | sed s/-I//g)",
+      ],
+      "libraries": [
+        "<!@(pkg-config --libs libeac)",
+      ],
+    },
+  ],
 }

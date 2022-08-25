@@ -9,7 +9,8 @@
   },
   "files": [
     "src",
-    "binding.gyp"
+    "binding.gyp",
+    "except.gypi"
   ],
   "keywords": [
     "icao",

@@ -16,11 +16,11 @@
         "src/SM.cpp",
       ],
       "includes": [
-        "node_modules/node-addon-api/except.gypi",
+        "except.gypi",
       ],
       "include_dirs": [
-        "node_modules/node-addon-api",
-        "<!@(pkg-config --cflags-only-I libeac | sed s/-I//g)",
+        "<!@(node -p \"require('node-addon-api').include\")",
+        "<!@(pkg-config --cflags-only-I libeac | sed s/-I//g)"
       ],
       "libraries": [
         "<!@(pkg-config --libs libeac)",

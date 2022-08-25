@@ -1,3 +1,9 @@
 .vscode
 build
 node_modules
+
+.autoenv.zsh
+CMakeLists.txt
+
+*.tgz
+test-*.js

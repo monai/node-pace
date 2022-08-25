@@ -1,32 +1,26 @@
 {
   "name": "@monai/pace",
-  "version": "2.0.0",
-  "description": "ICAO Doc 9303 PACE protocol mapping routines",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "OpenPACE Bindings",
   "gypfile": true,
+  "main": "index.js",
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
   "files": [
-    "src/**/*.{h,hpp,cpp}",
+    "src",
     "binding.gyp"
   ],
-  "scripts": {
-    "install": "node-gyp rebuild",
-    "gyp:xcode": "NODE_GYP_FORCE_PYTHON=/usr/bin/python node-gyp configure --debug -- -f xcode"
-  },
   "keywords": [
     "icao",
     "9303",
     "doc 9303",
-    "pace"
+    "pace",
+    "openpace"
   ],
-  "devDependencies": {
-    "@monai/eslint-config-base": "0.0.4",
-    "@monai/eslint-config-node": "0.0.4",
-    "@monai/eslint-config-style": "0.0.4",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.29.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-node": "^11.1.0"
+  "dependencies": {
+    "node-addon-api": "^5.0.0",
+    "node-gyp": "^9.1.0"
   },
   "repository": {
     "type": "git",

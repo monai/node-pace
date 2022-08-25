@@ -1,6 +1,6 @@
 {
   "name": "@monai/pace",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "OpenPACE Bindings",
   "gypfile": true,
   "main": "index.js",
@@ -9,7 +9,8 @@
   },
   "files": [
     "src",
-    "binding.gyp"
+    "binding.gyp",
+    "except.gypi"
   ],
   "keywords": [
     "icao",
